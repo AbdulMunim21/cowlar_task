@@ -94,7 +94,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     if (controller.text != "")
                                       SizedBox(
                                         height: isPortrait
-                                            ? constraints.maxHeight * 0.8
+                                            ? constraints.maxHeight * 0.93
                                             : constraints.maxHeight * 0.6,
                                         child: ListView.builder(
                                           itemBuilder: (context, index) =>
@@ -143,7 +143,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
           ),
-          bottomNavigationBar: const NavBarWidget(),
+          bottomNavigationBar: NavBarWidget(isPortrait: isPortrait),
         ),
       );
     });

@@ -8,7 +8,8 @@ import '../../providers/screenStateProvider.dart';
 import 'navBarIconWidget.dart';
 
 class NavBarWidget extends ConsumerWidget {
-  const NavBarWidget({super.key});
+  const NavBarWidget({super.key, required this.isPortrait});
+  final bool isPortrait;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -19,7 +20,7 @@ class NavBarWidget extends ConsumerWidget {
 
     return Container(
       width: width(context),
-      height: height(context) * 0.1,
+      height: isPortrait ? height(context) * 0.1 : height(context) * 0.15,
       alignment: Alignment.centerLeft,
       decoration: const BoxDecoration(
         color: navBarColor,

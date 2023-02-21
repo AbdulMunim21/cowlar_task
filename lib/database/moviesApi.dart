@@ -32,7 +32,7 @@ class MoviesAPI {
         }
       }
 
-      print(filteredMovieList);
+      // print(filteredMovieList);
 
       // await MovieLocalDatabaseAPI().addMoviesToDatabase(filteredMovieList);
       return filteredMovieList;
@@ -71,7 +71,15 @@ class MoviesAPI {
         );
       }
     }
-    print(filteredMovieList);
+    // print(filteredMovieList);
     return filteredMovieList;
+  }
+
+  getMovieTrailerId(int id) async {
+    final response = await dio
+        .get("https://api.themoviedb.org/3/movie/$id/videos?api_key=$apiKey");
+
+    String videoId = response.data['results'][0]['key'];
+    return videoId;
   }
 }
