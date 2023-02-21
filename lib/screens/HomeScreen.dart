@@ -6,6 +6,7 @@ import 'package:cowlar_task/screens/movieDetailScreen.dart';
 import 'package:cowlar_task/widgets/appBarWidgets/appBarWidget.dart';
 import 'package:cowlar_task/widgets/navBarWidgets/navBarWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
