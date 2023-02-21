@@ -68,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: height(context) * 0.75,
+                    height: height(context) * 0.9,
                     child: isSearching
                         ? Container(
                             margin: const EdgeInsets.only(top: 20),
