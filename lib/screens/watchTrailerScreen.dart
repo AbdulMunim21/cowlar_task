@@ -1,5 +1,3 @@
-import 'package:cowlar_task/constants/colors.dart';
-import 'package:cowlar_task/constrants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -39,7 +37,7 @@ class _WatchTrailerScreenState extends State<WatchTrailerScreen> {
     )..addListener(listener);
   }
 
-  listener() {
+  listener() async {
     if (PlayerState.ended == _controller.value.playerState) {
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeRight,
@@ -47,6 +45,7 @@ class _WatchTrailerScreenState extends State<WatchTrailerScreen> {
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown
       ]);
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.of(context).pop();
     }
   }
@@ -67,8 +66,10 @@ class _WatchTrailerScreenState extends State<WatchTrailerScreen> {
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown
         ]);
+        // _controller.dispose();
         Navigator.of(context).pop();
-        return false;
+
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.black,

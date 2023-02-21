@@ -12,7 +12,7 @@ class $MovieTable extends Movie with TableInfo<$MovieTable, MovieData> {
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -62,8 +62,6 @@ class $MovieTable extends Movie with TableInfo<$MovieTable, MovieData> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -107,7 +105,7 @@ class $MovieTable extends Movie with TableInfo<$MovieTable, MovieData> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   MovieData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -268,15 +266,14 @@ class MovieCompanion extends UpdateCompanion<MovieData> {
     this.hasVideo = const Value.absent(),
   });
   MovieCompanion.insert({
-    required int id,
+    this.id = const Value.absent(),
     required String title,
     required String overview,
     required String imageUrl,
     required String releaseDate,
     required String genreIds,
     required int hasVideo,
-  })  : id = Value(id),
-        title = Value(title),
+  })  : title = Value(title),
         overview = Value(overview),
         imageUrl = Value(imageUrl),
         releaseDate = Value(releaseDate),

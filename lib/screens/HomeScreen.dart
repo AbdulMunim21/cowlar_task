@@ -123,8 +123,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 }
                                 return ListView.builder(
                                   itemBuilder: (context, index) {
-                                    final movieData =
-                                        (snapshot.data as List<dynamic>)[index];
+                                    final movieData = (snapshot.data
+                                        as List<MovieModel>)[index];
                                     return MovieTileWidget(
                                       movieData: movieData,
                                       width: constraints.maxWidth,
@@ -132,8 +132,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       isPortrait: isPortrait,
                                     );
                                   },
-                                  itemCount:
-                                      (snapshot.data as List<dynamic>).length,
+                                  itemCount: (snapshot.data as List<MovieModel>)
+                                      .length,
                                 );
                               },
                             );

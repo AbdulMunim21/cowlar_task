@@ -7,7 +7,7 @@ import '../constants/keys.dart';
 
 class MoviesAPI {
   final dio = Dio();
-  getAllMovies() async {
+  Future<List<MovieModel>> getAllMovies() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
@@ -15,7 +15,7 @@ class MoviesAPI {
           .get("https://api.themoviedb.org/3/trending/all/day?api_key=$apiKey");
       // save in local database
       final movieList = response.data['results'];
-      final filteredMovieList = [];
+      List<MovieModel> filteredMovieList = [];
       for (var movie in movieList) {
         if (movie["title"] != null) {
           filteredMovieList.add(
@@ -31,14 +31,11 @@ class MoviesAPI {
           );
         }
       }
-
-      // print(filteredMovieList);
-
-      // await MovieLocalDatabaseAPI().addMoviesToDatabase(filteredMovieList);
+      await MovieLocalDatabaseAPI().addMoviesToDatabase(filteredMovieList);
       return filteredMovieList;
     } else {
       // get data from database
-      return MovieLocalDatabaseAPI().getAllMovies();
+      return await MovieLocalDatabaseAPI().getAllMovies();
     }
   }
 
