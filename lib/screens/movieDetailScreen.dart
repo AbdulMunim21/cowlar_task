@@ -6,10 +6,13 @@ import 'package:cowlar_task/model/movieModel.dart';
 import 'package:cowlar_task/screens/watchTrailerScreen.dart';
 import 'package:cowlar_task/widgets/genreBubbleWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
+import '../blocs/internetBloc/internetBloc.dart';
+import '../blocs/internetBloc/internetState.dart';
 import '../providers/genreStateProvider.dart';
 
 class MovieDetailScreen extends ConsumerWidget {
@@ -279,53 +282,59 @@ class WatchTrailerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        final connectivityResult = await (Connectivity().checkConnectivity());
-        if (connectivityResult == ConnectivityResult.mobile ||
-            connectivityResult == ConnectivityResult.wifi) {
-          String trailerId = await MoviesAPI().getMovieTrailerId(id);
-          // ignore: use_build_context_synchronously
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => WatchTrailerScreen(trailerId: trailerId),
-          ));
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: blackColor.withOpacity(0.3),
-          border: Border.all(
-            color: lightBlueColor,
+    return BlocBuilder<InternetBloc, InternetState>(
+      builder: (context, state) {
+        return GestureDetector(
+          onTap: () async {
+            if (state is InternetAvailableState) {
+              String trailerId = await MoviesAPI().getMovieTrailerId(id);
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => WatchTrailerScreen(trailerId: trailerId),
+              ));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Internet Not Availalbe")));
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: blackColor.withOpacity(0.3),
+              border: Border.all(
+                color: lightBlueColor,
+              ),
+            ),
+            padding: const EdgeInsets.all(20),
+            width:
+                isPortrait ? constraints.maxWidth : constraints.maxWidth * 0.48,
+            height: isPortrait
+                ? constraints.maxHeight * 0.2
+                : constraints.maxHeight * 0.25,
+            alignment: Alignment.center,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  FaIcon(
+                    FontAwesomeIcons.play,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      "Watch Trailer",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  )
+                ]),
           ),
-        ),
-        padding: const EdgeInsets.all(20),
-        width: isPortrait ? constraints.maxWidth : constraints.maxWidth * 0.48,
-        height: isPortrait
-            ? constraints.maxHeight * 0.2
-            : constraints.maxHeight * 0.25,
-        alignment: Alignment.center,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              FaIcon(
-                FontAwesomeIcons.play,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Flexible(
-                child: Text(
-                  "Watch Trailer",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              )
-            ]),
-      ),
+        );
+      },
     );
   }
 }

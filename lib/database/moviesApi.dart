@@ -13,7 +13,6 @@ class MoviesAPI {
         connectivityResult == ConnectivityResult.wifi) {
       final response = await dio
           .get("https://api.themoviedb.org/3/trending/all/day?api_key=$apiKey");
-      // save in local database
       final movieList = response.data['results'];
       List<MovieModel> filteredMovieList = [];
       for (var movie in movieList) {
@@ -34,7 +33,6 @@ class MoviesAPI {
       await MovieLocalDatabaseAPI().addMoviesToDatabase(filteredMovieList);
       return filteredMovieList;
     } else {
-      // get data from database
       return await MovieLocalDatabaseAPI().getAllMovies();
     }
   }

@@ -1,3 +1,8 @@
+import 'package:cowlar_task/blocs/movieListBloc/movieListBloc.dart';
+import 'package:cowlar_task/blocs/movieListBloc/movieListEvent.dart';
+import 'package:cowlar_task/blocs/movieListBloc/movieListState.dart';
+import 'package:cowlar_task/blocs/movieListSearchBloc/movieListSearchBloc.dart';
+import 'package:cowlar_task/blocs/movieListSearchBloc/movieListSearchEvent.dart';
 import 'package:cowlar_task/constants/colors.dart';
 import 'package:cowlar_task/constrants.dart';
 import 'package:cowlar_task/database/moviesApi.dart';
@@ -7,8 +12,13 @@ import 'package:cowlar_task/screens/movieDetailScreen.dart';
 import 'package:cowlar_task/widgets/appBarWidgets/appBarWidget.dart';
 import 'package:cowlar_task/widgets/navBarWidgets/navBarWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../blocs/internetBloc/internetBloc.dart';
+import '../blocs/internetBloc/internetState.dart';
+import '../blocs/movieListSearchBloc/movieListSearchState.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +29,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool isSearching = false;
+
   void changeSearchingFunction() {
     controller.clear();
     setState(() {
@@ -27,20 +38,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   TextEditingController controller = TextEditingController();
-
-  var searchedMoviesList = [];
   var genreList = [];
 
   void onSubmit(String text) async {
-    searchedMoviesList = await MoviesAPI().getSearchMovie(text);
-    setState(() {});
+    BlocProvider.of<MovieListSearchBloc>(context)
+        .add(GetSearchMovieList(query: controller.text));
   }
 
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<MovieListBloc>(context).add(GetMovieList());
     genreList = ref.read(genreStateProvider.notifier).genres;
-    // setState(() {});
   }
 
   @override
@@ -75,65 +84,114 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child:
                                 LayoutBuilder(builder: (context, constraints) {
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (controller.text != "")
-                                      const Text(
-                                        "Top Results",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w400,
-                                            color: darkGreyColor),
-                                      ),
-                                    if (controller.text != "")
-                                      const Divider(
-                                        color: darkGreyColor,
-                                        thickness: 2,
-                                      ),
-                                    if (controller.text != "")
-                                      SizedBox(
-                                        height: isPortrait
-                                            ? constraints.maxHeight * 0.93
-                                            : constraints.maxHeight * 0.6,
-                                        child: ListView.builder(
-                                          itemBuilder: (context, index) =>
-                                              SearchedMovieTile(
-                                                  searchedMoviesList:
-                                                      searchedMoviesList,
-                                                  isPortrait: isPortrait,
-                                                  genreList: genreList,
-                                                  constraints: constraints,
-                                                  index: index),
-                                          itemCount: searchedMoviesList.length,
-                                        ),
-                                      )
-                                  ]);
+                              return BlocBuilder<InternetBloc, InternetState>(
+                                builder: (context, state) {
+                                  
+                                  if(state == InternetAvailableState){
+                                    return  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (controller.text != "")
+                                          const Text(
+                                            "Top Results",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w400,
+                                                color: darkGreyColor),
+                                          ),
+                                        if (controller.text != "")
+                                          const Divider(
+                                            color: darkGreyColor,
+                                            thickness: 2,
+                                          ),
+                                        if (controller.text != "")
+                                          SizedBox(
+                                            height: isPortrait
+                                                ? constraints.maxHeight * 0.93
+                                                : constraints.maxHeight * 0.6,
+                                            child: BlocBuilder<
+                                                MovieListSearchBloc,
+                                                MovieListSearchState>(
+                                              builder: (context, state) {
+                                                if (state
+                                                    is MovieListSearchInitial) {
+                                                  return const Center(
+                                                    child: Text("Nothing"),
+                                                  );
+                                                }
+                                                if (state
+                                                    is MovieListSearchLoading) {
+                                                  return const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  );
+                                                }
+                                                if (state
+                                                    is MovieListSearchLoaded) {
+                                                  return ListView.builder(
+                                                    itemBuilder: (context, index) =>
+                                                        SearchedMovieTile(
+                                                            searchedMoviesList:
+                                                                state.movieList,
+                                                            isPortrait:
+                                                                isPortrait,
+                                                            genreList:
+                                                                genreList,
+                                                            constraints:
+                                                                constraints,
+                                                            index: index),
+                                                    itemCount:
+                                                        state.movieList.length,
+                                                  );
+                                                }
+                                                return const Center(
+                                                  child: Text(
+                                                      "Something is Wrong"),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                      ]);
+                                  }
+
+                                  return const Center(child: Text("Internet Not Available"),);
+                                  
+                                },
+                              );
                             }),
                           )
                         : LayoutBuilder(builder: (context, constraints) {
-                            return FutureBuilder(
-                              future: MoviesAPI().getAllMovies(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
+                            return BlocBuilder<MovieListBloc, MovieListState>(
+                              builder: (context, state) {
+                                if (state is MovieListInitial) {
                                   return const Center(
-                                    child: Text("Loading"),
+                                    child: Text("Starting"),
                                   );
                                 }
-                                return ListView.builder(
-                                  itemBuilder: (context, index) {
-                                    final movieData = (snapshot.data
-                                        as List<MovieModel>)[index];
-                                    return MovieTileWidget(
-                                      movieData: movieData,
-                                      width: constraints.maxWidth,
-                                      height: constraints.maxHeight,
-                                      isPortrait: isPortrait,
-                                    );
-                                  },
-                                  itemCount: (snapshot.data as List<MovieModel>)
-                                      .length,
+                                if (state is MovieListLoading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                if (state is MovieListLoaded) {
+                                  return ListView.builder(
+                                    itemBuilder: (context, index) {
+                                      final movieData =
+                                          (state.movieList)[index];
+                                      return MovieTileWidget(
+                                        movieData: movieData,
+                                        width: constraints.maxWidth,
+                                        height: constraints.maxHeight,
+                                        isPortrait: isPortrait,
+                                      );
+                                    },
+                                    itemCount: (state.movieList).length,
+                                  );
+                                }
+                                return const Center(
+                                  child: Text("Error Occured"),
                                 );
                               },
                             );

@@ -16,4 +16,6 @@ class MovieModel {
     required this.releaseDate,
     required this.genreIds,
   });
+
+  
 }
