@@ -5,4 +5,3 @@ MovieList Task by Cowlar
 The Remaining Parts
 - UnitTesting
 - Book Ticket UI
-- Bloc Architecture
