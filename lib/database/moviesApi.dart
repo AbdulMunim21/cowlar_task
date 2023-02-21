@@ -1,13 +1,44 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cowlar_task/localdb/movieLocalDatabaseApi.dart';
+import 'package:cowlar_task/model/movieModel.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import '../constants/keys.dart';
 
 class MoviesAPI {
   final dio = Dio();
   getAllMovies() async {
-    final response = await dio.get(
-        "https://api.themoviedb.org/3/trending/all/day?api_key=576f015f7065a05f3effe8b630ea2e9c");
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      final response = await dio
+          .get("https://api.themoviedb.org/3/trending/all/day?api_key=$apiKey");
+      // save in local database
+      final movieList = response.data['results'];
+      final filteredMovieList = [];
+      for (var movie in movieList) {
+        if (movie["title"] != null) {
+          filteredMovieList.add(
+            MovieModel(
+              id: movie['id'],
+              title: movie['title'],
+              hasVideo: movie['video'],
+              imageUrl: movie['poster_path'],
+              overview: movie['overview'],
+              releaseDate: movie['release_date'],
+              genreIds: movie['genre_ids'],
+            ),
+          );
+        }
+      }
 
-    // save in local database
+      print(filteredMovieList);
 
-    // store in provider
+      // await MovieLocalDatabaseAPI().addMoviesToDatabase(filteredMovieList);
+      return filteredMovieList;
+    } else {
+      // get data from database
+      return MovieLocalDatabaseAPI().getAllMovies();
+    }
   }
 }
