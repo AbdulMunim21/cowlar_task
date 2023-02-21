@@ -5,9 +5,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchFieldWidget extends StatelessWidget {
   final Function func;
-  SearchFieldWidget({super.key, required this.func});
-
-  TextEditingController controller = TextEditingController();
+  final TextEditingController controller;
+  final Function onSubmit;
+  SearchFieldWidget(
+      {super.key,
+      required this.func,
+      required this.controller,
+      required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +35,9 @@ class SearchFieldWidget extends StatelessWidget {
                 controller: controller,
                 keyboardType: TextInputType.text,
                 cursorColor: blackColor,
+                onFieldSubmitted: (value) {
+                  onSubmit(value);
+                },
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.only(left: 20),
