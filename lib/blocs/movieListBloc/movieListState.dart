@@ -9,7 +9,7 @@ abstract class MovieListState extends Equatable {
 
   @override
   List<MovieModel> get props => [];
-}
+} 
 
 class MovieListInitial extends MovieListState {}
 

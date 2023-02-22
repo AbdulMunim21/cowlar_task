@@ -11,7 +11,7 @@ class InternetBloc extends Bloc<InternetEvent, InternetState> {
   StreamSubscription? _streamSubscription;
   InternetBloc() : super(InternetInitialState()) {
     on<InternetGainedEvent>((event, emit) async {
-      emit(InternetAvailableState(available: true));
+      emit(InternetAvailableState());
     });
     on<InternetLostEvent>((event, emit) async {
       emit(InternetNotAvailableState(message: "Internet Not Available"));

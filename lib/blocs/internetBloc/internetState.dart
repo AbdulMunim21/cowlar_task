@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 abstract class InternetState extends Equatable {
-  const InternetState();
+  InternetState();
 
   @override
   get props => [];
@@ -10,11 +10,10 @@ abstract class InternetState extends Equatable {
 class InternetInitialState extends InternetState {}
 
 class InternetAvailableState extends InternetState {
-  final bool available;
-  const InternetAvailableState({required this.available});
+  InternetAvailableState();
 }
 
 class InternetNotAvailableState extends InternetState {
   final String message;
-  const InternetNotAvailableState({required this.message});
+  InternetNotAvailableState({required this.message});
 }

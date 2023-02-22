@@ -41,6 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   var genreList = [];
 
   void onSubmit(String text) async {
+    print("Function Inside");
     BlocProvider.of<MovieListSearchBloc>(context)
         .add(GetSearchMovieList(query: controller.text));
   }
@@ -86,77 +87,89 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 LayoutBuilder(builder: (context, constraints) {
                               return BlocBuilder<InternetBloc, InternetState>(
                                 builder: (context, state) {
-                                  
-                                  if(state == InternetAvailableState){
-                                    return  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (controller.text != "")
-                                          const Text(
-                                            "Top Results",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w400,
-                                                color: darkGreyColor),
-                                          ),
-                                        if (controller.text != "")
-                                          const Divider(
-                                            color: darkGreyColor,
-                                            thickness: 2,
-                                          ),
-                                        if (controller.text != "")
-                                          SizedBox(
-                                            height: isPortrait
-                                                ? constraints.maxHeight * 0.93
-                                                : constraints.maxHeight * 0.6,
-                                            child: BlocBuilder<
-                                                MovieListSearchBloc,
-                                                MovieListSearchState>(
-                                              builder: (context, state) {
-                                                if (state
-                                                    is MovieListSearchInitial) {
-                                                  return const Center(
-                                                    child: Text("Nothing"),
-                                                  );
-                                                }
-                                                if (state
-                                                    is MovieListSearchLoading) {
-                                                  return const Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  );
-                                                }
-                                                if (state
-                                                    is MovieListSearchLoaded) {
-                                                  return ListView.builder(
-                                                    itemBuilder: (context, index) =>
-                                                        SearchedMovieTile(
-                                                            searchedMoviesList:
-                                                                state.movieList,
-                                                            isPortrait:
-                                                                isPortrait,
-                                                            genreList:
-                                                                genreList,
-                                                            constraints:
-                                                                constraints,
-                                                            index: index),
-                                                    itemCount:
-                                                        state.movieList.length,
-                                                  );
-                                                }
-                                                return const Center(
-                                                  child: Text(
-                                                      "Something is Wrong"),
-                                                );
-                                              },
+                                  // print(state is InternetAvailableState);
+                                  if (state is InternetAvailableState) {
+                                    print("Avaialbale");
+                                    return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (controller.text != "")
+                                            const Text(
+                                              "Top Results",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: darkGreyColor),
                                             ),
-                                          )
-                                      ]);
+                                          if (controller.text != "")
+                                            const Divider(
+                                              color: darkGreyColor,
+                                              thickness: 2,
+                                            ),
+                                          if (controller.text != "")
+                                            SizedBox(
+                                              height: isPortrait
+                                                  ? constraints.maxHeight * 0.93
+                                                  : constraints.maxHeight * 0.6,
+                                              child: BlocBuilder<
+                                                  MovieListSearchBloc,
+                                                  MovieListSearchState>(
+                                                builder: (context, state) {
+                                                  print(state.toString());
+                                                  if (state
+                                                      is MovieListSearchInitial) {
+                                                    return const Center(
+                                                      child: Text("Nothing"),
+                                                    );
+                                                  }
+                                                  if (state
+                                                      is MovieListSearchLoading) {
+                                                    return const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    );
+                                                  }
+                                                  if (state
+                                                      is MovieListSearchLoaded) {
+                                                    return ListView.builder(
+                                                      itemBuilder: (context,
+                                                              index) =>
+                                                          SearchedMovieTile(
+                                                              searchedMoviesList:
+                                                                  state
+                                                                      .movieList,
+                                                              isPortrait:
+                                                                  isPortrait,
+                                                              genreList:
+                                                                  genreList,
+                                                              constraints:
+                                                                  constraints,
+                                                              index: index),
+                                                      itemCount: state
+                                                          .movieList.length,
+                                                    );
+                                                  }
+
+                                                  if (state
+                                                      is MovieListSearchError) {
+                                                    return Center(
+                                                      child:
+                                                          Text(state.message!),
+                                                    );
+                                                  }
+                                                  return const Center(
+                                                    child: Text("Try Later"),
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                        ]);
                                   }
 
-                                  return const Center(child: Text("Internet Not Available"),);
-                                  
+                                  return const Center(
+                                    child: Text("Internet Not Available"),
+                                  );
                                 },
                               );
                             }),

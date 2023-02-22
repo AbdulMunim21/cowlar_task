@@ -11,7 +11,7 @@ class SearchFieldWidget extends StatelessWidget {
   final Function func;
   final TextEditingController controller;
   final Function onSubmit;
-  SearchFieldWidget(
+  const SearchFieldWidget(
       {super.key,
       required this.func,
       required this.controller,
@@ -42,7 +42,8 @@ class SearchFieldWidget extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     cursorColor: blackColor,
                     onFieldSubmitted: (value) {
-                      if (state == InternetAvailableState) {
+                      
+                      if (state is InternetAvailableState) {
                         onSubmit(value);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

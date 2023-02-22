@@ -16,11 +16,9 @@ class MovieListSearchInitial extends MovieListSearchState {}
 class MovieListSearchLoading extends MovieListSearchState {}
 
 class MovieListSearchLoaded extends MovieListSearchState {
-  late final List<MovieModel> movieList;
+  final List<MovieModel> movieList;
 
-  MovieListSearchLoaded(List<MovieModel> newMovieList) {
-    this.movieList = newMovieList;
-  }
+  const MovieListSearchLoaded(this.movieList);
 }
 
 class MovieListSearchError extends MovieListSearchState {

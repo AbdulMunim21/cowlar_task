@@ -2,7 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cowlar_task/localdb/movieLocalDatabaseApi.dart';
 import 'package:cowlar_task/model/movieModel.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+
 import '../constants/keys.dart';
 
 class MoviesAPI {
@@ -11,8 +11,8 @@ class MoviesAPI {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi) {
-      final response = await dio
-          .get("https://api.themoviedb.org/3/trending/all/day?api_key=$apiKey");
+      final response =
+          await dio.get("$baseUrl/trending/all/day?api_key=$apiKey");
       final movieList = response.data['results'];
       List<MovieModel> filteredMovieList = [];
       for (var movie in movieList) {
@@ -37,19 +37,19 @@ class MoviesAPI {
     }
   }
 
-  getAllGenres() async {
-    final response = await dio.get(
-        "https://api.themoviedb.org/3/genre/movie/list?api_key=576f015f7065a05f3effe8b630ea2e9c&language=en-US");
-
+  Future<List<dynamic>> getAllGenres() async {
+    final response = await dio
+        .get("$baseUrl/genre/movie/list?api_key=$apiKey&language=en-US");
+    // print(response.data['genres'].runtimeType);
     return response.data['genres'];
   }
 
-  getSearchMovie(String query) async {
+  Future<List<MovieModel>> getSearchMovie(String query) async {
     final response = await dio.get(
-        "https://api.themoviedb.org/3/search/multi?api_key=576f015f7065a05f3effe8b630ea2e9c&language=en-US&query=$query&page=1&include_adult=false");
+        "$baseUrl/search/multi?api_key=$apiKey&language=en-US&query=$query&page=1&include_adult=false");
 
     final movieList = response.data['results'];
-    final filteredMovieList = [];
+    final List<MovieModel> filteredMovieList = [];
 
     for (var movie in movieList) {
       if (movie["title"] != null) {
@@ -70,9 +70,8 @@ class MoviesAPI {
     return filteredMovieList;
   }
 
-  getMovieTrailerId(int id) async {
-    final response = await dio
-        .get("https://api.themoviedb.org/3/movie/$id/videos?api_key=$apiKey");
+  Future<String> getMovieTrailerId(int id) async {
+    final response = await dio.get("$baseUrl/movie/$id/videos?api_key=$apiKey");
 
     String videoId = response.data['results'][0]['key'];
     return videoId;
