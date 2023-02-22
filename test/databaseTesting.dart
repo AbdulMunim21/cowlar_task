@@ -17,6 +17,7 @@ void main() async {
       "$baseUrl/search/multi?api_key=$apiKey&language=en-US&query=hum&page=1&include_adult=false";
 
   const trendingMoviesPath = "$baseUrl/trending/all/day?api_key=$apiKey";
+  
   test("Get Video ID Test", () async {
     dioAdapter.onGet(
         videoIDPath,

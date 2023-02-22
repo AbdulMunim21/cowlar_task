@@ -3,6 +3,7 @@ import 'package:cowlar_task/constants/colors.dart';
 import 'package:cowlar_task/constrants.dart';
 import 'package:cowlar_task/database/moviesApi.dart';
 import 'package:cowlar_task/model/movieModel.dart';
+import 'package:cowlar_task/screens/SelectCinemaScreen.dart';
 import 'package:cowlar_task/screens/watchTrailerScreen.dart';
 import 'package:cowlar_task/widgets/genreBubbleWidget.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 import '../blocs/internetBloc/internetBloc.dart';
 import '../blocs/internetBloc/internetState.dart';
@@ -236,6 +238,8 @@ class ImageWidget extends StatelessWidget {
                                 GetTicketsButton(
                                   isPortrait: isPortrait,
                                   constraints: constraints,
+                                  title: movieData.title,
+                                  releaseDate: movieData.releaseDate,
                                 ),
                                 const SizedBox(
                                   height: 20,
@@ -252,6 +256,8 @@ class ImageWidget extends StatelessWidget {
                                 GetTicketsButton(
                                   isPortrait: isPortrait,
                                   constraints: constraints,
+                                  title: movieData.title,
+                                  releaseDate: movieData.releaseDate,
                                 ),
                                 WatchTrailerButton(
                                     isPortrait: isPortrait,
@@ -341,27 +347,47 @@ class WatchTrailerButton extends StatelessWidget {
 
 class GetTicketsButton extends StatelessWidget {
   const GetTicketsButton(
-      {super.key, required this.isPortrait, required this.constraints});
+      {super.key,
+      required this.isPortrait,
+      required this.constraints,
+      required this.title,
+      required this.releaseDate});
 
   final bool isPortrait;
   final BoxConstraints constraints;
+  final String title;
+  final String releaseDate;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: lightBlueColor,
-      ),
-      width: isPortrait ? constraints.maxWidth : constraints.maxWidth * 0.48,
-      height: isPortrait
-          ? constraints.maxHeight * 0.2
-          : constraints.maxHeight * 0.25,
-      alignment: Alignment.center,
-      child: const Text(
-        "Get Tickets",
-        style: TextStyle(
-            color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () {
+        final currentState = BlocProvider.of<InternetBloc>(context).state;
+        if (currentState is InternetAvailableState) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                SelectCinemaScreen(title: title, releaseDate: releaseDate),
+          ));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Internet Not Available")));
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: lightBlueColor,
+        ),
+        width: isPortrait ? constraints.maxWidth : constraints.maxWidth * 0.48,
+        height: isPortrait
+            ? constraints.maxHeight * 0.2
+            : constraints.maxHeight * 0.25,
+        alignment: Alignment.center,
+        child: const Text(
+          "Get Tickets",
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
